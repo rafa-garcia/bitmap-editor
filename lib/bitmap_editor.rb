@@ -1,17 +1,19 @@
 # frozen_string_literal: true
 
 # BitmapEditor
-class BitmapEditor
-  def run(file)
-    return puts 'please provide correct file' if file.nil? || !File.exist?(file)
+module BitmapEditor
+  InvalidInputError = Class.new(StandardError)
 
-    File.open(file).each do |line|
-      line = line.chomp
-      case line
+  def self.run(command_entries)
+    raise InvalidInputError unless command_entries.respond_to?(:each_line)
+
+    command_entries.each_line do |entry|
+      entry = entry.chomp
+      case entry
       when 'S'
         puts 'There is no image'
       else
-        puts 'unrecognised command :('
+        puts 'Unrecognised command :('
       end
     end
   end

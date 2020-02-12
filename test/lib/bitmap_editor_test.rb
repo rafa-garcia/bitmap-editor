@@ -2,42 +2,48 @@
 
 require 'bitmap_editor'
 
-describe BitmapEditor, :new do
-  subject { BitmapEditor.new }
+describe BitmapEditor, :run do
+  describe 'when called with no arguments' do
+    subject { BitmapEditor.run }
 
-  it 'initialises' do
-    subject.must_be_instance_of BitmapEditor
+    it 'raises an exception' do
+      expect { subject }.must_raise ArgumentError
+    end
   end
 
-  describe :run do
-    describe 'when called with no arguments' do
-      subject { BitmapEditor.new.run }
+  describe 'when called with an argument' do
+    subject { BitmapEditor.run(command_entries) }
 
-      it 'raises an exception' do
-        expect { subject }.must_raise ArgumentError
+    describe 'and it is invalid' do
+      let(:command_entries) { %i[invalid_input] }
+
+      it 'outputs a message' do
+        expect { subject }.must_raise BitmapEditor::InvalidInputError
       end
     end
 
-    describe 'when called with an argument' do
-      subject { BitmapEditor.new.run file_path }
-
-      describe 'and it is invalid' do
-        let(:file_path) { './path_to/invalid_file.txt' }
+    describe 'and it is valid' do
+      describe 'when the command is not recognised' do
+        let(:command_entries) do
+          <<~HEREDOC
+            Z
+          HEREDOC
+        end
 
         it 'outputs a message' do
-          expect { subject }.must_output "please provide correct file\n"
+          expect { subject }.must_output("Unrecognised command :(\n", nil)
         end
       end
 
-      describe 'and it is valid' do
-        let(:file_path) { 'examples/show.txt' }
-
-        it 'opens the file' do
-          subject.must_be_instance_of File
+      describe 'when the command is recognised' do
+        let(:command_entries) do
+          <<~HEREDOC
+            S
+          HEREDOC
         end
 
         it 'outputs a message' do
-          expect { subject }.must_output "There is no image\n"
+          expect { subject }.must_output("There is no image\n", nil)
         end
       end
     end

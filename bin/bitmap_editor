@@ -3,4 +3,13 @@
 
 require_relative '../lib/bitmap_editor'
 
-BitmapEditor.new.run(ARGV.first)
+if ARGV.empty?
+  warn  'Missing argument: [file path]'
+  abort "Usage: #{$PROGRAM_NAME} path/to/file"
+end
+
+begin
+  BitmapEditor.run(ARGF.read)
+rescue Errno::ENOENT # Subclass of SystemCallError for file not found.
+  abort "Missing file: #{ARGF.filename} is nowhere to be found"
+end
