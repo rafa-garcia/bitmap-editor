@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
 describe 'bin/bitmap_editor' do
+  before { skip }
+
   def run_script(*args)
     @out, @err = capture_subprocess_io do
       system "#{script_path} #{args.join(' ')}"
     end
   end
 
-  let(:script_path)   { File.join('bin', 'bitmap_editor') }
-  let(:examples_dir)  { File.join('test', 'examples') }
+  let(:script_path)  { File.join('bin', 'bitmap_editor') }
+  let(:examples_dir) { File.join('test', 'examples') }
 
   describe 'when called with no arguments' do
     before do

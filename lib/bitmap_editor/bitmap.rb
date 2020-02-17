@@ -8,16 +8,16 @@ module BitmapEditor
     BLANK_PIXEL = 'O'
 
     def initialize(columns:, rows:)
-      validate!(SIZE, columns, rows)
+      validate!(SIZE, [columns], [rows])
 
       @image = [[BLANK_PIXEL] * Integer(columns)] * Integer(rows)
     end
 
     # Handles the 'colour' of the bitmap whether a pixel, a line or all.
     def paint(range_h:, range_v:, colour: BLANK_PIXEL)
-      normalise_ranges(range_h, range_v) do |rows, cols|
-        validate!(SIZE, cols, rows)
+      validate!(SIZE, range_h, range_v)
 
+      normalise_ranges(range_h, range_v) do |rows, cols|
         switch(range_h.one?) do |img|
           img[rows].each { |vector| vector.fill(colour, cols) }
         end
@@ -44,14 +44,14 @@ module BitmapEditor
     end
 
     # Yields ranges with their indices reset to zero-based.
-    def normalise_ranges(ranges)
+    def normalise_ranges(*ranges)
       range_h, range_v = ranges.map { |range| Range.new(*range.map(&:pred)) }
 
       yield range_h, range_v
     end
 
     def validate!(size, columns, rows)
-      return if size.cover?(columns) && size.cover?(rows)
+      return if ((columns + rows) & size.to_a).any?
 
       message = "The values are out of range (scope #{size.begin}-#{size.end})"
       raise Errors::ArgumentError, message
