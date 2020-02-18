@@ -57,12 +57,12 @@ describe BitmapEditor::Bitmap do
             let(:bitmap_params) { { columns: 5, rows: 6 } }
 
             it 'initialises' do
-              subject.must_be_instance_of BitmapEditor::Bitmap
+              _(subject).must_be_instance_of BitmapEditor::Bitmap
             end
 
             it 'has an image of the correct size' do
-              image.length.must_equal 6
-              image.flatten.length.must_equal 30
+              _(image.length).must_equal 6
+              _(image.flatten.length).must_equal 30
             end
           end
         end
@@ -126,7 +126,7 @@ describe BitmapEditor::Bitmap do
           end
 
           it 'paints it' do
-            image.must_equal expected
+            _(image).must_equal expected
           end
         end
 
@@ -146,7 +146,7 @@ describe BitmapEditor::Bitmap do
             end
 
             it 'paints it' do
-              image.must_equal expected
+              _(image).must_equal expected
             end
           end
 
@@ -165,7 +165,7 @@ describe BitmapEditor::Bitmap do
             end
 
             it 'paints it' do
-              image.must_equal expected
+              _(image).must_equal expected
             end
           end
         end
@@ -185,7 +185,7 @@ describe BitmapEditor::Bitmap do
           end
 
           it 'paints it clear' do
-            image.must_equal expected
+            _(image).must_equal expected
           end
         end
       end

@@ -14,7 +14,7 @@ module BitmapEditor
     end
 
     def self.normalise(entry)
-      command, *arguments = entry.block_scanf('%s') do |char,|
+      command, *arguments = entry.block_scanf('%s') do |char,| # ',' unpacks ary
         char.match(/\d/) ? char.to_i : char.upcase
       end
 

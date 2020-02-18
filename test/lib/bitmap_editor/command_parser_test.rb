@@ -33,8 +33,8 @@ describe BitmapEditor::CommandParser, :parse do
 
         BitmapEditor::CommandParser::Command.stub :new, command_klass do
           subject.parse(raw_entry) do |operation, *parameters|
-            operation.must_equal :print
-            parameters.must_equal [{ range_h: [], range_v: [], colour: 'X' }]
+            _(operation).must_equal :print
+            _(parameters).must_equal [{ range_h: [], range_v: [], colour: 'X' }]
           end
         end
         assert_mock command
