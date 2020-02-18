@@ -31,7 +31,7 @@ describe BitmapEditor::Bitmap do
             let(:bitmap_params) { { columns: 'wrong', rows: 'value' } }
 
             it 'fails to initialize' do
-              expect { subject }.must_raise BitmapEditor::Errors::ArgumentError
+              expect { subject }.must_raise ArgumentError
             end
           end
 
@@ -39,7 +39,7 @@ describe BitmapEditor::Bitmap do
             let(:bitmap_params) { { columns: '1', rows: '2' } }
 
             it 'fails to initialize' do
-              expect { subject }.must_raise BitmapEditor::Errors::ArgumentError
+              expect { subject }.must_raise ArgumentError
             end
           end
         end
@@ -49,7 +49,7 @@ describe BitmapEditor::Bitmap do
             let(:bitmap_params) { { columns: -1, rows: 256 } }
 
             it 'fails to initialize' do
-              expect { subject }.must_raise BitmapEditor::Errors::ArgumentError
+              expect { subject }.must_raise ArgumentError
             end
           end
 

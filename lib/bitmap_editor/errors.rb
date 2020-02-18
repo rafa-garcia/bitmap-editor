@@ -11,12 +11,10 @@ class BitmapEditor
       end
     end
 
-    CommandError = Class.new(BitmapEditorError) do
+    InvalidCommand = Class.new(BitmapEditorError) do
       def initialize
         super('unrecognised command :(')
       end
     end
-
-    ArgumentError = Class.new(BitmapEditorError)
   end
 end

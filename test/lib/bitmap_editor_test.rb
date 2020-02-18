@@ -74,7 +74,7 @@ describe BitmapEditor do
               bitmap_klass.expect :call, bitmap_inst,
                                   [:new, { columns: 3, rows: 3 }]
 
-              BitmapEditor::Command.stub :process, command_klass do
+              BitmapEditor::Command.stub :new, command_klass do
                 BitmapEditor::Bitmap.stub :public_send, bitmap_klass do
                   subject
                 end

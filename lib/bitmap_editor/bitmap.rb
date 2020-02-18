@@ -56,13 +56,12 @@ class BitmapEditor
       yield range_h, range_v
     end
 
-    def validate!(size, columns, rows)
+    def validate!(ref, columns, rows)
       # HACK: an easy-ish way to determine if an array includes another array.
       # Better calling #cover? with Ruby v2.6.1 or newer as it supports ranges.
-      return if ((columns + rows) & size.to_a).any?
+      return if ((columns + rows) & ref.to_a).any?
 
-      message = "The values are out of range (scope #{size.begin}-#{size.end})"
-      raise Errors::ArgumentError, message
+      raise ArgumentError, "values out of range (scope #{ref.begin}-#{ref.end})"
     end
   end
 end
