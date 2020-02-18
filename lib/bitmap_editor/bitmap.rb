@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module BitmapEditor
+class BitmapEditor
   # Bitmap represents the image and takes commands in the form of operations
   # and parameters to change and display its matrix of 'pixels'.
   class Bitmap

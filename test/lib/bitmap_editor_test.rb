@@ -18,32 +18,44 @@ describe BitmapEditor, :run do
       let(:command_entries) { %i[invalid_input] }
 
       it 'outputs a message' do
-        expect { subject }.must_raise BitmapEditor::InvalidInputError
+        expect { subject }.must_raise NoMethodError
       end
     end
 
     describe 'and it is valid' do
-      describe 'when the command is not recognised' do
-        let(:command_entries) do
-          <<~HEREDOC
-            Z
-          HEREDOC
-        end
+      let(:parser) { Minitest::Mock.new }
 
-        it 'outputs a message' do
-          expect { subject }.must_output("Unrecognised command :(\n", nil)
+      describe 'when there is no bitmap' do
+        let(:command_entries) { "S\n" }
+
+        it 'raises an exception' do
+          parser.expect :call, :show, [command_entries]
+
+          BitmapEditor::CommandParser.stub :parse, parser do
+            subject
+            # expect { subject }.must_raise BitmapEditor::Errors::MissingBitmap
+          end
+          assert_mock parser
         end
       end
 
-      describe 'when the command is recognised' do
-        let(:command_entries) do
-          <<~HEREDOC
-            S
-          HEREDOC
-        end
+      describe 'when there is a bitmap' do
+        it 'outputs a bitmap' do
+          let(:command_entries) do
+            <<~HEREDOC
+              S
+            HEREDOC
+          end
 
-        it 'outputs a message' do
-          expect { subject }.must_output("There is no image\n", nil)
+          it 'raises an exception' do
+            # parser_mock.expect :call, nil
+
+            # BitmapEditor::CommandParser.stub :parse, parser_mock do
+            #   proc { subject }.must_raise StandardError
+            # end
+
+            # assert_mock parser_mock
+          end
         end
       end
     end

@@ -3,7 +3,7 @@
 require 'scanf'
 require_relative 'command_parser/command'
 
-module BitmapEditor
+class BitmapEditor
   module CommandParser # :nodoc:
     def self.parse(command_entry)
       normalise(command_entry) do |command_code, arguments|

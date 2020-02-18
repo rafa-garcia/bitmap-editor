@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module BitmapEditor
+class BitmapEditor
   # Errors
   module Errors
     BitmapEditorError = Class.new(StandardError)
