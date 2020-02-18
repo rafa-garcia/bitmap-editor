@@ -9,7 +9,7 @@ if ARGV.empty?
 end
 
 begin
-  BitmapEditor.run(ARGF.read)
+  BitmapEditor.new.run(ARGF.read)
 rescue Errno::ENOENT # Subclass of SystemCallError for file not found.
   abort "Missing file: #{ARGF.filename} is nowhere to be found"
 end

@@ -2,59 +2,87 @@
 
 require 'bitmap_editor'
 
-describe BitmapEditor, :run do
-  describe 'when called with no arguments' do
-    subject { BitmapEditor.run }
+describe BitmapEditor do
+  describe '::new' do
+    subject { BitmapEditor.new }
 
-    it 'raises an exception' do
-      expect { subject }.must_raise ArgumentError
+    describe 'when called with no arguments' do
+      it 'initialises' do
+        _(subject).must_be_instance_of BitmapEditor
+      end
+
+      it 'does not have a bitmap' do
+        _(subject.instance_variable_get(:@image)).must_be_nil
+      end
     end
   end
 
-  describe 'when called with an argument' do
-    subject { BitmapEditor.run(command_entries) }
+  describe '#run' do
+    describe 'when called with no arguments' do
+      subject { BitmapEditor.new.run }
 
-    describe 'and it is invalid' do
-      let(:command_entries) { %i[invalid_input] }
-
-      it 'outputs a message' do
-        expect { subject }.must_raise NoMethodError
+      it 'raises an exception' do
+        expect { subject }.must_raise ArgumentError
       end
     end
 
-    describe 'and it is valid' do
-      let(:parser) { Minitest::Mock.new }
+    describe 'when called with an argument' do
+      subject { BitmapEditor.new.run(entries) }
 
-      describe 'when there is no bitmap' do
-        let(:command_entries) { "S\n" }
+      describe 'and it is invalid' do
+        let(:entries) { %i[invalid_input] }
 
         it 'raises an exception' do
-          parser.expect :call, :show, [command_entries]
-
-          BitmapEditor::CommandParser.stub :parse, parser do
-            subject
-            # expect { subject }.must_raise BitmapEditor::Errors::MissingBitmap
-          end
-          assert_mock parser
+          expect { subject }.must_raise NoMethodError
         end
       end
 
-      describe 'when there is a bitmap' do
-        it 'outputs a bitmap' do
-          let(:command_entries) do
-            <<~HEREDOC
-              S
-            HEREDOC
-          end
+      describe 'and it is valid' do
+        let(:command_klass) { Minitest::Mock.new }
+        let(:command_inst)  { Minitest::Mock.new }
 
-          it 'raises an exception' do
-            # parser_mock.expect :call, nil
+        describe 'but there is no bitmap' do
+          # describe 'and the method does not create one' do
+          #   let(:entries) { "S\n" }
 
-            # BitmapEditor::CommandParser.stub :parse, parser_mock do
-            #   proc { subject }.must_raise StandardError
-            # end
+          #   it 'raises an exception' do
+          #     command_klass.expect :call, command_inst,
+          #                          [entries.each_line.first]
+          #     command_inst.expect :params, [{}]
+          #     command_inst.expect :operation, :show
 
-            # assert_mock parser_mock
+          #     BitmapEditor::Command.stub :process, command_klass do
+          #       expect { subject }.must_raise
+          #       BitmapEditor::Errors::MissingBitmap
+          #     end
+          #     assert_mock command_klass
+          #     assert_mock command_inst
+          #   end
+          # end
+
+          describe 'and the method creates a new one' do
+            let(:entries)      { "I 3 3\n" }
+            let(:bitmap_klass) { Minitest::Mock.new }
+            let(:bitmap_inst) { Minitest::Mock.new }
+
+            it 'calls ::new on the Bitmap class' do
+              command_klass.expect :call, command_inst,
+                                   [entries.each_line.first]
+              command_inst.expect :params, { columns: 3, rows: 3 }
+              command_inst.expect :params, { columns: 3, rows: 3 }
+              command_inst.expect :operation, :new
+              bitmap_klass.expect :call, bitmap_inst,
+                                  [:new, { columns: 3, rows: 3 }]
+
+              BitmapEditor::Command.stub :process, command_klass do
+                BitmapEditor::Bitmap.stub :public_send, bitmap_klass do
+                  subject
+                end
+              end
+              assert_mock bitmap_klass
+              assert_mock command_klass
+              assert_mock command_inst
+            end
           end
         end
       end

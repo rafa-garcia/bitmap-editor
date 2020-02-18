@@ -1,21 +1,28 @@
 # frozen_string_literal: true
 
+require 'ostruct'
+
 class BitmapEditor
-  # Bitmap represents the image and takes commands in the form of operations
-  # and parameters to change and display its matrix of 'pixels'.
+  # Bitmap represents an image whose matrix of 'pixels' can be manipulated.
   class Bitmap
-    SIZE        = (1..250).freeze
-    BLANK_PIXEL = 'O'
+    CONTEXT = {
+      defaults: {
+        blank_pixel: 'O',
+        size_range: 1..250
+      }
+    }.freeze
+    private_constant :CONTEXT
 
     def initialize(columns:, rows:)
-      validate!(SIZE, [columns], [rows])
+      @settings = OpenStruct.new(CONTEXT[:defaults])
+      validate!(settings.size_range, [columns], [rows])
 
-      @image = [[BLANK_PIXEL] * Integer(columns)] * Integer(rows)
+      @image = [[settings.blank_pixel] * Integer(columns)] * Integer(rows)
     end
 
-    # Handles the 'colour' of the bitmap whether a pixel, a line or all.
-    def paint(range_h:, range_v:, colour: BLANK_PIXEL)
-      validate!(SIZE, range_h, range_v)
+    # Handles the 'colour' of the bitmap whether a pixel, a line or all of it.
+    def paint(range_h:, range_v:, colour: settings.blank_pixel)
+      validate!(settings.size_range, range_h, range_v)
 
       normalise_ranges(range_h, range_v) do |rows, cols|
         switch(range_h.one?) do |img|
@@ -32,14 +39,13 @@ class BitmapEditor
 
     private
 
-    attr_reader :image
+    attr_reader :settings, :image
 
     # Yields the transposed image when working on cols for easier manipulation.
     def switch(transpose)
       @image = image.transpose unless transpose
       yield image
       @image = image.transpose unless transpose
-
       image
     end
 
