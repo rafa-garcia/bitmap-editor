@@ -2,11 +2,12 @@
 
 require_relative 'bitmap_editor/bitmap'
 require_relative 'bitmap_editor/command'
-require_relative 'bitmap_editor/errors'
 
 # BitmapEditor takes an input that responds to #each_line and brokers its
 # contents on the fly between a command object and an image object.
 class BitmapEditor
+  MissingBitmap = Class.new(StandardError)
+
   def run(entries)
     entries.each_line do |entry|
       command = Command.new(entry)
@@ -30,6 +31,6 @@ class BitmapEditor
   def handle_err
     yield
   rescue NoMethodError
-    raise Errors::MissingBitmap
+    raise MissingBitmap, 'there is no image'
   end
 end

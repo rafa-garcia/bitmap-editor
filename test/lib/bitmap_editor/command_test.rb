@@ -17,7 +17,7 @@ describe BitmapEditor::Command do
 
       describe 'and it is invalid' do
         describe 'when the command is not supported' do
-          let(:error) { -> { raise BitmapEditor::Errors::InvalidCommand } }
+          let(:error) { -> { raise BitmapEditor::Command::InvalidCommand } }
 
           it 'raises an exception' do
             interpreter.expect :call, error
