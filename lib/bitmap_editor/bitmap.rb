@@ -5,24 +5,18 @@ require 'ostruct'
 class BitmapEditor
   # Bitmap represents an image whose matrix of 'pixels' can be manipulated.
   class Bitmap
-    CONTEXT = {
-      defaults: {
-        blank_pixel: 'O',
-        size_range: 1..250
-      }
-    }.freeze
-    private_constant :CONTEXT
+    BLANK_PIXEL = 'O'
+    SIZE_RANGE  = (1..250).freeze
 
     def initialize(columns:, rows:)
-      @settings = OpenStruct.new(CONTEXT[:defaults])
-      validate!(settings.size_range, [columns], [rows])
+      validate!(SIZE_RANGE, [columns], [rows])
 
-      @image = [[settings.blank_pixel] * Integer(columns)] * Integer(rows)
+      @image = [[BLANK_PIXEL] * Integer(columns)] * Integer(rows)
     end
 
     # Handles the 'colour' of the bitmap whether a pixel, a line or all of it.
-    def paint(range_h:, range_v:, colour: settings.blank_pixel)
-      validate!(settings.size_range, range_h, range_v)
+    def paint(range_h:, range_v:, colour:)
+      validate!(SIZE_RANGE, range_h, range_v)
 
       normalise_ranges(range_h, range_v) do |rows, cols|
         switch(range_h.one?) do |img|
@@ -39,7 +33,7 @@ class BitmapEditor
 
     private
 
-    attr_reader :settings, :image
+    attr_reader :image
 
     # Yields the transposed image when working on cols for easier manipulation.
     def switch(transpose)
