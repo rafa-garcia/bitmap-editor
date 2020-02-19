@@ -71,7 +71,7 @@ describe BitmapEditor::Bitmap do
   end
 
   describe '#paint' do
-    let(:bitmap_params) { { columns: 3, rows: 5 } }
+    let(:bitmap_params) { { columns: 5, rows: 6 } }
 
     describe 'when it is called with no arguments' do
       it 'fails to initialize' do
@@ -113,15 +113,16 @@ describe BitmapEditor::Bitmap do
 
         describe 'when it is a pixel' do
           let(:paint_params) do
-            { range_h: [2, 2], range_v: [3, 3], colour: 'X' }
+            { range_h: [1, 1], range_v: [3, 3], colour: 'A' }
           end
           let(:expected) do
             [
-              %w[O O O],
-              %w[O O O],
-              %w[O X O],
-              %w[O O O],
-              %w[O O O]
+              %w[O O O O O],
+              %w[O O O O O],
+              %w[A O O O O],
+              %w[O O O O O],
+              %w[O O O O O],
+              %w[O O O O O]
             ]
           end
 
@@ -131,17 +132,18 @@ describe BitmapEditor::Bitmap do
         end
 
         describe 'when it is a line' do
-          describe 'and it is horizontal' do
+          describe 'and it is vertical' do
             let(:paint_params) do
-              { range_h: [1, 3], range_v: [3, 3], colour: 'X' }
+              { range_h: [2, 2], range_v: [3, 6], colour: 'W' }
             end
             let(:expected) do
               [
-                %w[O O O],
-                %w[O O O],
-                %w[X X X],
-                %w[O O O],
-                %w[O O O]
+                %w[O O O O O],
+                %w[O O O O O],
+                %w[O W O O O],
+                %w[O W O O O],
+                %w[O W O O O],
+                %w[O W O O O]
               ]
             end
 
@@ -150,17 +152,18 @@ describe BitmapEditor::Bitmap do
             end
           end
 
-          describe 'and it is vertical' do
+          describe 'and it is horizontal' do
             let(:paint_params) do
-              { range_h: [2, 2], range_v: [1, 5], colour: 'X' }
+              { range_h: [3, 5], range_v: [2, 2], colour: 'Z' }
             end
             let(:expected) do
               [
-                %w[O X O],
-                %w[O X O],
-                %w[O X O],
-                %w[O X O],
-                %w[O X O]
+                %w[O O O O O],
+                %w[O O Z Z Z],
+                %w[O O O O O],
+                %w[O O O O O],
+                %w[O O O O O],
+                %w[O O O O O]
               ]
             end
 
@@ -172,15 +175,16 @@ describe BitmapEditor::Bitmap do
 
         describe 'when it is the whole image' do
           let(:paint_params) do
-            { range_h: [1, 3], range_v: [1, 5], colour: 'O' }
+            { range_h: [1, 5], range_v: [1, 6], colour: 'O' }
           end
           let(:expected) do
             [
-              %w[O O O],
-              %w[O O O],
-              %w[O O O],
-              %w[O O O],
-              %w[O O O]
+              %w[O O O O O],
+              %w[O O O O O],
+              %w[O O O O O],
+              %w[O O O O O],
+              %w[O O O O O],
+              %w[O O O O O]
             ]
           end
 

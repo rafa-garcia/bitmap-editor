@@ -17,9 +17,8 @@ class BitmapEditor
     # Handles the 'colour' of the bitmap whether a pixel, a line or all of it.
     def paint(range_h:, range_v:, colour:)
       validate!(SIZE_RANGE, range_h, range_v)
-
       normalise_ranges(range_h, range_v) do |rows, cols|
-        switch(range_h.one?) do |img|
+        switch(!range_v.one? && !range_h.one?) do |img|
           img[rows].each { |vector| vector.fill(colour, cols) }
         end
       end
@@ -45,7 +44,9 @@ class BitmapEditor
 
     # Yields ranges with their indices reset to zero-based.
     def normalise_ranges(*ranges)
-      range_h, range_v = ranges.map { |range| Range.new(*range.map(&:pred)) }
+      range_h, range_v = ranges.map do |range|
+        Range.new(*[range.first.pred, range.last.pred])
+      end
 
       yield range_h, range_v
     end
