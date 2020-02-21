@@ -54,7 +54,7 @@ class BitmapEditor
     # Yields ranges with their indices reset to zero-based.
     def normalise_groups(*groups)
       col_group, row_group = groups.map do |group|
-        Range.new(*[group.first.pred, group.last.pred])
+        Range.new(group.first.pred, group.last.pred)
       end
 
       yield col_group, row_group
