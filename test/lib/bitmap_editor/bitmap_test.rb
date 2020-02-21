@@ -82,7 +82,7 @@ describe BitmapEditor::Bitmap do
     describe 'when it is called with arguments' do
       describe 'and they are invalid' do
         describe 'with wrong horizontal range' do
-          let(:paint_params) { { range_h: 'wrong', range_v: [1, 2] } }
+          let(:paint_params) { { col_group: 'wrong', row_group: [1, 2] } }
 
           it 'raises an exception' do
             expect { subject.paint }.must_raise ArgumentError
@@ -90,7 +90,7 @@ describe BitmapEditor::Bitmap do
         end
 
         describe 'with wrong vertical range' do
-          let(:paint_params) { { range_h: [1, 2], range_v: 'wrong' } }
+          let(:paint_params) { { col_group: [1, 2], row_group: 'wrong' } }
 
           it 'raises an exception' do
             expect { subject.paint }.must_raise ArgumentError
@@ -99,7 +99,7 @@ describe BitmapEditor::Bitmap do
 
         describe 'with wrong colour character' do
           let(:paint_params) do
-            { range_h: [1, 2], range_v: [1, 2], colour: [''] }
+            { col_group: [1, 2], row_group: [1, 2], colour: 'ZZ' }
           end
 
           it 'raises an exception' do
@@ -113,7 +113,7 @@ describe BitmapEditor::Bitmap do
 
         describe 'when it is a pixel' do
           let(:paint_params) do
-            { range_h: [1, 1], range_v: [3, 3], colour: 'A' }
+            { col_group: [1], row_group: [3, 3], colour: 'A' }
           end
           let(:expected) do
             [
@@ -134,7 +134,7 @@ describe BitmapEditor::Bitmap do
         describe 'when it is a line' do
           describe 'and it is vertical' do
             let(:paint_params) do
-              { range_h: [2, 2], range_v: [3, 6], colour: 'W' }
+              { col_group: [2], row_group: [3, 6], colour: 'W' }
             end
             let(:expected) do
               [
@@ -154,7 +154,7 @@ describe BitmapEditor::Bitmap do
 
           describe 'and it is horizontal' do
             let(:paint_params) do
-              { range_h: [3, 5], range_v: [2, 2], colour: 'Z' }
+              { col_group: [3, 5], row_group: [2], colour: 'Z' }
             end
             let(:expected) do
               [
@@ -175,7 +175,7 @@ describe BitmapEditor::Bitmap do
 
         describe 'when it is the whole image' do
           let(:paint_params) do
-            { range_h: [1, 5], range_v: [1, 6], colour: 'O' }
+            { col_group: [1, 5], row_group: [1, 6], colour: 'O' }
           end
           let(:expected) do
             [
@@ -196,18 +196,38 @@ describe BitmapEditor::Bitmap do
     end
   end
 
+  describe '#clear' do
+    let(:bitmap_params) { { columns: 5, rows: 6 } }
+    let(:expected) do
+      [
+        %w[O O O O O],
+        %w[O O O O O],
+        %w[O O O O O],
+        %w[O O O O O],
+        %w[O O O O O],
+        %w[O O O O O]
+      ]
+    end
+
+    it 'clears out the image' do
+      subject.clear
+      _(image).must_equal expected
+    end
+  end
+
   describe '#show' do
-    let(:bitmap_params) { { columns: 3, rows: 5 } }
+    let(:bitmap_params) { { columns: 5, rows: 6 } }
     let(:paint_params) do
-      { range_h: [1, 3], range_v: [1, 5], colour: 'X' }
+      { col_group: [1, 3], row_group: [1, 5], colour: 'X' }
     end
     let(:expected) do
       <<~OUTPUT
-        XXX
-        XXX
-        XXX
-        XXX
-        XXX
+        XXXOO
+        XXXOO
+        XXXOO
+        XXXOO
+        XXXOO
+        OOOOO
       OUTPUT
     end
 

@@ -38,50 +38,39 @@ describe BitmapEditor do
       end
 
       describe 'and it is valid' do
-        let(:command_klass) { Minitest::Mock.new }
-        let(:command_inst)  { Minitest::Mock.new }
+        let(:interpreter) { Minitest::Mock.new }
+        let(:bitmap)      { Minitest::Mock.new }
 
         describe 'but there is no bitmap' do
-          # describe 'and the method does not create one' do
-          #   let(:entries) { "S\n" }
+          describe 'and the method does not create one' do
+            let(:entries) { 'S' }
+            let(:operation) { [:show, {}] }
 
-          #   it 'raises an exception' do
-          #     command_klass.expect :call, command_inst,
-          #                          [entries.each_line.first]
-          #     command_inst.expect :params, [{}]
-          #     command_inst.expect :operation, :show
+            it 'raises an exception' do
+              interpreter.expect :call, operation, [entries]
 
-          #     BitmapEditor::Command.stub :process, command_klass do
-          #       expect { subject }.must_raise
-          #       BitmapEditor::Errors::MissingBitmap
-          #     end
-          #     assert_mock command_klass
-          #     assert_mock command_inst
-          #   end
-          # end
+              BitmapEditor::Interpreter.stub :process, interpreter do
+                expect { subject }.must_raise BitmapEditor::MissingBitmap
+              end
+              assert_mock interpreter
+            end
+          end
 
           describe 'and the method creates a new one' do
-            let(:entries)      { "I 3 3\n" }
-            let(:bitmap_klass) { Minitest::Mock.new }
-            let(:bitmap_inst) { Minitest::Mock.new }
+            let(:entries) { 'I 3 3' }
+            let(:operation) { [:new, { columns: 3, rows: 3 }] }
 
             it 'calls ::new on the Bitmap class' do
-              command_klass.expect :call, command_inst,
-                                   [entries.each_line.first]
-              command_inst.expect :params, { columns: 3, rows: 3 }
-              command_inst.expect :params, { columns: 3, rows: 3 }
-              command_inst.expect :operation, :new
-              bitmap_klass.expect :call, bitmap_inst,
-                                  [:new, { columns: 3, rows: 3 }]
+              interpreter.expect :call, operation, [entries]
+              bitmap.expect :call, true, [*operation]
 
-              BitmapEditor::Command.stub :new, command_klass do
-                BitmapEditor::Bitmap.stub :public_send, bitmap_klass do
+              BitmapEditor::Interpreter.stub :process, interpreter do
+                BitmapEditor::Bitmap.stub :public_send, bitmap do
                   subject
                 end
+                assert_mock bitmap
               end
-              assert_mock bitmap_klass
-              assert_mock command_klass
-              assert_mock command_inst
+              assert_mock interpreter
             end
           end
         end

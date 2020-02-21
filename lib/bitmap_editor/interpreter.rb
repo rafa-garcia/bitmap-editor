@@ -4,7 +4,7 @@ require_relative 'interpreter/mapper'
 require_relative 'interpreter/parser'
 
 class BitmapEditor
-  # Interpreter orchestrates input data processing.
+  # Interpreter orchestrates the data processing of a raw command entry.
   class Interpreter
     def self.process(input)
       # Cleans the input and yields normalised data.

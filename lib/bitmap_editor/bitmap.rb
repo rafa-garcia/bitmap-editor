@@ -6,22 +6,31 @@ class BitmapEditor
   # Bitmap represents an image whose matrix of 'pixels' can be manipulated.
   class Bitmap
     BLANK_PIXEL = 'O'
-    SIZE_RANGE  = (1..250).freeze
+    COL_LIMIT   = ROW_LIMIT = (1..250).freeze
 
     def initialize(columns:, rows:)
-      validate!(SIZE_RANGE, [columns], [rows])
+      validate_inclusion!([columns], [rows], COL_LIMIT, ROW_LIMIT)
 
-      @image = [[BLANK_PIXEL] * Integer(columns)] * Integer(rows)
+      @col_range = 1..columns
+      @row_range = 1..rows
+      @image     = [[BLANK_PIXEL] * Integer(columns)] * Integer(rows)
     end
 
     # Handles the 'colour' of the bitmap whether a pixel, a line or all of it.
-    def paint(range_h:, range_v:, colour:)
-      validate!(SIZE_RANGE, range_h, range_v)
-      normalise_ranges(range_h, range_v) do |rows, cols|
-        switch(!range_v.one? && !range_h.one?) do |img|
-          img[rows].each { |vector| vector.fill(colour, cols) }
+    def paint(col_group:, row_group:, colour:)
+      validate_colour!(colour)
+      validate_inclusion!(col_group, row_group, col_range, row_range)
+
+      normalise_groups(col_group, row_group) do |cols, rows|
+        switch do |img|
+          img[cols].each { |vector| vector.fill(colour, rows) }
         end
       end
+      self
+    end
+
+    def clear
+      paint(col_group: col_range, row_group: row_range, colour: BLANK_PIXEL)
       self
     end
 
@@ -32,31 +41,35 @@ class BitmapEditor
 
     private
 
-    attr_reader :image
+    attr_reader :image, :col_range, :row_range
 
-    # Yields the transposed image when working on cols for easier manipulation.
-    def switch(transpose)
-      @image = image.transpose unless transpose
+    # Yields the transposed image for easier manipulation.
+    def switch
+      @image = image.transpose
       yield image
-      @image = image.transpose unless transpose
+      @image = image.transpose
       image
     end
 
     # Yields ranges with their indices reset to zero-based.
-    def normalise_ranges(*ranges)
-      range_h, range_v = ranges.map do |range|
-        Range.new(*[range.first.pred, range.last.pred])
+    def normalise_groups(*groups)
+      col_group, row_group = groups.map do |group|
+        Range.new(*[group.first.pred, group.last.pred])
       end
 
-      yield range_h, range_v
+      yield col_group, row_group
     end
 
-    def validate!(ref, columns, rows)
-      # HACK: an easy-ish way to determine if an array includes another array.
-      # Better calling #cover? with Ruby v2.6.1 or newer as it supports ranges.
-      return if ((columns + rows) & ref.to_a).any?
+    def validate_colour!(colour)
+      msg = 'colour must be a capital letter'
+      raise ArgumentError, msg unless colour&.match(/^[A-Z]{1}$/)
+    end
 
-      raise ArgumentError, "values out of range (scope #{ref.begin}-#{ref.end})"
+    def validate_inclusion!(col_group, row_group, col_range, row_range)
+      included = col_group.all? { |point| col_range.cover? point } &&
+                 row_group.all? { |point| row_range.cover? point }
+
+      raise ArgumentError, 'values out of range' unless included
     end
   end
 end

@@ -1,24 +1,21 @@
 # frozen_string_literal: true
 
 require_relative 'bitmap_editor/bitmap'
-require_relative 'bitmap_editor/command'
+require_relative 'bitmap_editor/interpreter'
 
 # BitmapEditor takes an input that responds to #each_line and brokers its
-# contents on the fly between a command object and an image object.
+# contents on the fly between a command entry and an image object.
 class BitmapEditor
   MissingBitmap = Class.new(StandardError)
 
   def run(entries)
     entries.each_line do |entry|
-      command = Command.new(entry)
-      # HACK: workaround due to a Ruby pre-v2.7 bug where an empty hash won't
-      # unpack by doube-splatting (https://bugs.ruby-lang.org/issues/10708).
-      @bitmap =
-        if command.params.empty?
-          handle_err { bitmap.public_send(command.operation) }
-        else
-          handle_err { bitmap.public_send(command.operation, **command.params) }
-        end
+      next if entry.strip.empty?
+
+      @method, @params = Interpreter.process(entry.strip)
+      raise MissingBitmap, 'there is no image' if no_bitmap_yet?
+
+      execute!
     end
   end
 
@@ -28,9 +25,18 @@ class BitmapEditor
 
   private
 
-  def handle_err
-    yield
-  rescue NoMethodError
-    raise MissingBitmap, 'there is no image'
+  def execute!
+    # HACK: workaround due to a Ruby pre-v2.7 bug where an empty hash won't
+    # unpack by doube-splatting (https://bugs.ruby-lang.org/issues/10708).
+    @bitmap =
+      if @params.empty?
+        bitmap.public_send(@method)
+      else
+        bitmap.public_send(@method, **@params)
+      end
+  end
+
+  def no_bitmap_yet?
+    bitmap == Bitmap && @method != :new
   end
 end

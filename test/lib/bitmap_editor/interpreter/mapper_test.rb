@@ -65,7 +65,7 @@ describe BitmapEditor::Interpreter::Mapper do
           let(:command) { :L }
           let(:args)    { [1, 3, 'A'] }
           let(:expected) do
-            [:paint, { range_h: [1], range_v: [3], colour: 'A' }]
+            [:paint, { col_group: [1], row_group: [3], colour: 'A' }]
           end
 
           it 'resolves the mappings' do
@@ -77,7 +77,7 @@ describe BitmapEditor::Interpreter::Mapper do
           let(:command) { :V }
           let(:args)    { [2, 3, 6, 'W'] }
           let(:expected) do
-            [:paint, { range_h: [2], range_v: [3, 6], colour: 'W' }]
+            [:paint, { col_group: [2], row_group: [3, 6], colour: 'W' }]
           end
 
           it 'resolves the mappings' do
@@ -89,7 +89,7 @@ describe BitmapEditor::Interpreter::Mapper do
           let(:command) { :H }
           let(:args)    { [2, 3, 6, 'Z'] }
           let(:expected) do
-            [:paint, { range_h: [2, 3], range_v: [6], colour: 'Z' }]
+            [:paint, { col_group: [2, 3], row_group: [6], colour: 'Z' }]
           end
 
           it 'resolves the mappings' do
@@ -100,9 +100,7 @@ describe BitmapEditor::Interpreter::Mapper do
         describe 'when command is S' do
           let(:command) { :S }
           let(:args) { [] }
-          let(:expected) do
-            [:show, {}]
-          end
+          let(:expected) { [:show, {}] }
 
           it 'resolves the mappings' do
             _(subject.resolve(command, args)).must_equal expected
